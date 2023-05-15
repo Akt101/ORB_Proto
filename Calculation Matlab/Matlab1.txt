@@ -1,0 +1,47 @@
+function Displacement = acc2disp1(acc, time);
+
+clear all
+close all
+clc
+
+acc_m = mean(acc, "all")
+acc = acc - acc_m
+acc = -1*acc
+%time = zeroes(1, length(acc))
+%time = [0.2:0.2:length(acc)/5]
+%figure
+%plot(time,acc)
+%xlabel('Time (sec)')
+%ylabel('Acceleration (m/sec^2)')
+
+fs = 5; % Sampling Rate
+fc = .3; % Cut off Frequency
+order = 3; % 6th Order Filter
+
+acc = detrend(acc);  
+[b1 a1] = butter(order,fc/(fs/2),'high');
+accf=filtfilt(b1,a1,acc);
+%figure (2)
+%plot(time,accf,'r'); hold on
+%plot(time,acc)
+%xlabel('Time (sec)')
+%ylabel('Acceleration (m/sec^2)')
+
+velocity=cumtrapz(time,accf);
+%figure (3)
+%plot(time,velocity)
+%xlabel('Time (sec)')
+%ylabel('Velocity (m/sec)')
+
+velocity = detrend(velocity);  
+[b2 a2] = butter(order,fc/(fs / 2),'high');
+velf = filtfilt(b2,a2,velocity);
+
+Displacement=cumtrapz(time, velf);
+Displacement = detrend(Displacement);  
+%figure(4)
+%plot(time,Displacement)
+%xlabel('Time (sec)')
+%ylabel('Displacement (m)')%
+
+end
